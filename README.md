@@ -80,6 +80,13 @@ A model-free trial on the cluster passed:
 
 The GPU measurement (teacher against student, in agent mode) has not been run yet. SWE-bench is used for measurement only and never for training.
 
+## Status and limits
+
+- **No model has been trained on this data yet.** The repository covers data generation, auditing and measurement. Post-training Nova on it is the next step.
+- **The code needs the cluster to run end to end:** GLM-5.3 weights (about 700 GB, 8 GPUs), vLLM, Apptainer images and SLURM. The tests run anywhere.
+- **Code comments, identifiers and reports are in French.** This README is the English entry point.
+- **The audit was done by the same AI-assisted process that built the data.** It is not an independent review.
+
 ## Data format
 
 Each line of `data/sample_v2.jsonl` is one example:
