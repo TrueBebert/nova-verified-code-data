@@ -104,6 +104,10 @@ python test_agent_code.py
 
 The tests need git and bash, but no GPU and no network. They use a fake engine, a fake terminal and the real terminal loop, run with our own commands.
 
+## Related work
+
+- [nova-4b-reliable-reasoning](https://github.com/TrueBebert/nova-4b-reliable-reasoning): the earlier stage on Qwen3.5-4B + LoRA (case-file reasoning, a calculation tool, missing inputs), with pre-registered decisions and blind reviews.
+
 ## License
 
 - **Code:** Apache-2.0 (see `LICENSE`).
