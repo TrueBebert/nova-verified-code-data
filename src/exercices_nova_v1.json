@@ -1,0 +1,98 @@
+{
+  "_note": "Exercices Nova, essai (préparé le 17/10/2026 ; heures GPU seulement après l'accord de l'utilisateur) : exercices_nova.py. GLM-5.3 en effort élevé à toutes les étapes (création, résolution, bogues, réparation). 100 exercices par langage, 40 % difficiles ; un exercice est gardé si sa solution passe ses tests, si le fichier de départ les rate, s'il a au moins tests_minimum tests et s'il ne ressemble pas à Exercism (part de l'exercice en phrases d'Exercism >= seuil_lexical_exercism, part d'un énoncé d'Exercism recopiée >= seuil_recopie_exercism avec au moins 25 groupes de trois mots, sens proche : note relative z >= seuil_e5_z_exercism ou note e5 >= seuil_e5_exercism, ou même titre) ni à un autre exercice du même langage (seuil_e5_doublon). Bogue gardé si les tests le voient, sans erreur de compilation, en lignes_bogue_max lignes changées au plus. lot : éléments par lot ; duree_lot_minutes : durée prévue d'un lot complet (ensuite, celle du lot précédent). Réglages de vLLM repris de code_reel_v1.json.",
+  "_modifications": [
+    "19/10/2026 (après la création, avant la résolution) : seuil_e5_exercism 0,90 -> 0,95 (filet pour une quasi-copie) et seuil_e5_z_exercism 3,0 ajouté (sens proche = note relative z au reste d'Exercism). Le seuil fixe à 0,90 écartait 142 exercices sur 348 alors que tous notaient de 0,866 à 0,917 et qu'aucun ne partageait de phrases ni de titre avec Exercism (ERR-140, PB-008 ; audit_filtre_exercices.py, outputs/nova_122b_preparation/exercices_nova/AUDIT_FILTRE_20261019.md). Le filtrage est refait au début de la résolution ; l'ancien résultat reste dans taches_finales.<date>.json."
+  ],
+  "version": 1,
+  "graine": 20261017,
+  "langages": [
+    "cpp",
+    "go",
+    "java",
+    "javascript",
+    "python",
+    "rust"
+  ],
+  "taches_par_langage": 100,
+  "part_difficile": 0.4,
+  "tests_minimum": 5,
+  "lignes_bogue_max": 12,
+  "seuil_lexical_exercism": 0.25,
+  "seuil_recopie_exercism": 0.35,
+  "seuil_e5_exercism": 0.95,
+  "seuil_e5_z_exercism": 3.0,
+  "seuil_e5_doublon": 0.95,
+  "professeur": {
+    "modele": "modeles/GLM-5.3",
+    "limite_minutes": 215,
+    "limite_chargement_minutes": 70,
+    "env": {
+      "VLLM_FLASHINFER_ALLREDUCE_BACKEND": "trtllm",
+      "VLLM_DEEP_GEMM_WARMUP": "skip",
+      "VLLM_BLOCKSCALE_FP8_GEMM_FLASHINFER": "0",
+      "VLLM_DISABLED_KERNELS": "FlashInferFp8DeepGEMMDynamicBlockScaledKernel,FlashInferFp8BlockScaledMMKernel",
+      "VLLM_USE_DEEP_GEMM_E8M0": "0"
+    },
+    "vllm": {
+      "tensor_parallel_size": 8,
+      "kv_cache_dtype": "fp8",
+      "max_model_len": 106496,
+      "max_num_seqs": 256,
+      "gpu_memory_utilization": 0.88,
+      "compilation_config": {
+        "pass_config": {
+          "fuse_allreduce_rms": false
+        }
+      }
+    },
+    "repli": {
+      "enforce_eager": true
+    }
+  },
+  "phases": {
+    "creation": {
+      "chat_kwargs": {
+        "reasoning_effort": "high"
+      },
+      "n": 1,
+      "temperature": 1.0,
+      "top_p": 0.95,
+      "max_tokens": 49152,
+      "lot": 150,
+      "duree_lot_minutes": 45
+    },
+    "resolution": {
+      "chat_kwargs": {
+        "reasoning_effort": "high"
+      },
+      "n": 1,
+      "temperature": 1.0,
+      "top_p": 0.95,
+      "max_tokens": 65536,
+      "lot": 200,
+      "duree_lot_minutes": 40
+    },
+    "injection": {
+      "chat_kwargs": {
+        "reasoning_effort": "high"
+      },
+      "n": 1,
+      "temperature": 1.0,
+      "top_p": 0.95,
+      "max_tokens": 32768,
+      "lot": 200,
+      "duree_lot_minutes": 30
+    },
+    "reparation": {
+      "chat_kwargs": {
+        "reasoning_effort": "high"
+      },
+      "n": 1,
+      "temperature": 1.0,
+      "top_p": 0.95,
+      "max_tokens": 65536,
+      "lot": 200,
+      "duree_lot_minutes": 35
+    }
+  }
+}

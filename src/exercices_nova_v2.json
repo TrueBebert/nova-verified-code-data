@@ -1,0 +1,117 @@
+{
+  "_note": "Exercices Nova, campagne 2 (préparée le 25/10/2026 avec l'accord de l'utilisateur ; heures GPU seulement après son accord sur le coût) : mêmes étapes que l'essai de 600 (exercices_nova_v1.json), avec ses leçons. (1) Une solution de référence qui rate ses propres tests est corrigée une fois par GLM-5.3 (énoncé et tests fixes ; phase correction_reference). (2) Bogues injectés subtils ou doubles (bogues ; lignes_bogue_max par bogue, deux endroits au moins pour un double). (3) 200 thèmes et 12 genres (themes 2), à tour de rôle : un thème revient 2 ou 3 fois par langage. (4) Dossiers à part (resultats, donnees) ; l'essai de 600 (campagnes_precedentes) n'est que lu : ses exercices ne sont pas redemandés et ses exercices gardés servent au filtre des doublons. (5) Moitié d'exercices difficiles (l'élève y réussit 37 % au premier essai, contre 58 % pour les moyens). Filtre « proche d'Exercism » : note relative z, comme recalibré le 19/10. Essai à blanc avant chaque chargement. Durées prévues d'un lot complet d'après l'essai : création 95 min (correction comprise), résolution 25, bogues 10, réparations 20. 26/10 : premier lancement (203912, 203913) : 234/300 créations valides, 49/87 références sauvées par la correction ; un créneau ne faisait qu'un lot (lot suivant prévu trop long) -> lot ajusté au temps restant (par_lots) et 4 créneaux en chaîne par lancement. 27/10 : lots ajustés vérifiés sur le cluster (204079 : 150 + 137 créations en 3 h 20) ; 2 869 exercices à créer et non 3 000 (131 identifiants déjà demandés par l'essai, écartés comme prévu) ; reste environ 250 h GPU, soit 9 à 10 créneaux -> 12 créneaux en file au plus, pour finir avec une seule relance (un créneau sans travail s'arrête sans charger le modèle). 29/10 : Discoverer refuse plus de 8 tâches en file par personne (QOSMaxSubmitJobPerUserLimit, relance du 27/10 22:09 : 6 suites acceptées sur 9) ; création et filtre finis (2 194 valides sur 2 869, 1 845 gardés), résolution commencée (1 097/1 504 au premier essai) ; reste environ 2 créneaux -> 4 en file au plus (8 au maximum sur Discoverer).",
+  "version": 2,
+  "source_donnees": "exercices_nova_v2",
+  "graine": 20261026,
+  "themes": 2,
+  "langages": [
+    "cpp",
+    "go",
+    "java",
+    "javascript",
+    "python",
+    "rust"
+  ],
+  "taches_par_langage": 500,
+  "part_difficile": 0.5,
+  "tests_minimum": 5,
+  "lignes_bogue_max": 12,
+  "seuil_lexical_exercism": 0.25,
+  "seuil_recopie_exercism": 0.35,
+  "seuil_e5_exercism": 0.95,
+  "seuil_e5_z_exercism": 3.0,
+  "seuil_e5_doublon": 0.95,
+  "resultats": "resultats/exercices_nova_v2",
+  "donnees": "donnees/exercices_nova_v2",
+  "campagnes_precedentes": [
+    "resultats/exercices_nova"
+  ],
+  "corriger_reference": true,
+  "bogues": [
+    "subtil",
+    "double"
+  ],
+  "creneaux": 4,
+  "professeur": {
+    "modele": "modeles/GLM-5.3",
+    "limite_minutes": 215,
+    "limite_chargement_minutes": 70,
+    "env": {
+      "VLLM_FLASHINFER_ALLREDUCE_BACKEND": "trtllm",
+      "VLLM_DEEP_GEMM_WARMUP": "skip",
+      "VLLM_BLOCKSCALE_FP8_GEMM_FLASHINFER": "0",
+      "VLLM_DISABLED_KERNELS": "FlashInferFp8DeepGEMMDynamicBlockScaledKernel,FlashInferFp8BlockScaledMMKernel",
+      "VLLM_USE_DEEP_GEMM_E8M0": "0"
+    },
+    "vllm": {
+      "tensor_parallel_size": 8,
+      "kv_cache_dtype": "fp8",
+      "max_model_len": 106496,
+      "max_num_seqs": 256,
+      "gpu_memory_utilization": 0.88,
+      "compilation_config": {
+        "pass_config": {
+          "fuse_allreduce_rms": false
+        }
+      }
+    },
+    "repli": {
+      "enforce_eager": true
+    }
+  },
+  "phases": {
+    "creation": {
+      "chat_kwargs": {
+        "reasoning_effort": "high"
+      },
+      "n": 1,
+      "temperature": 1.0,
+      "top_p": 0.95,
+      "max_tokens": 49152,
+      "lot": 150,
+      "duree_lot_minutes": 95
+    },
+    "correction_reference": {
+      "chat_kwargs": {
+        "reasoning_effort": "high"
+      },
+      "n": 1,
+      "temperature": 1.0,
+      "top_p": 0.95,
+      "max_tokens": 32768
+    },
+    "resolution": {
+      "chat_kwargs": {
+        "reasoning_effort": "high"
+      },
+      "n": 1,
+      "temperature": 1.0,
+      "top_p": 0.95,
+      "max_tokens": 65536,
+      "lot": 200,
+      "duree_lot_minutes": 25
+    },
+    "injection": {
+      "chat_kwargs": {
+        "reasoning_effort": "high"
+      },
+      "n": 1,
+      "temperature": 1.0,
+      "top_p": 0.95,
+      "max_tokens": 32768,
+      "lot": 200,
+      "duree_lot_minutes": 10
+    },
+    "reparation": {
+      "chat_kwargs": {
+        "reasoning_effort": "high"
+      },
+      "n": 1,
+      "temperature": 1.0,
+      "top_p": 0.95,
+      "max_tokens": 65536,
+      "lot": 200,
+      "duree_lot_minutes": 20
+    }
+  }
+}

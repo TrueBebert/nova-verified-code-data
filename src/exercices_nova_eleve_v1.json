@@ -1,0 +1,54 @@
+{
+  "_note": "Mesure de l'élève sur les exercices Nova (accord de l'utilisateur le 23/10/2026) : Qwen3.5-122B-A10B-FP8 sur 2 GPU passe les 306 exercices gardés par le filtrage du professeur, avec les mêmes demandes, la même relance (sortie des tests) et les mêmes tests que GLM-5.3 en résolution (exercices_nova.py, PipelineEleve). Réglages du modèle et de la génération repris de code_reel_v1.json (rôle eleve, phase polyglot_eleve : réflexion, T 0,6, top_p 0,95, top_k 20, 65 536 jetons). Résultats dans resultats/exercices_nova_eleve, jamais des données d'entraînement ; bilan apparié avec GLM-5.3 dans bilan_eleve.json.",
+  "version": 1,
+  "role": "eleve",
+  "graine": 20261017,
+  "langages": [
+    "cpp",
+    "go",
+    "java",
+    "javascript",
+    "python",
+    "rust"
+  ],
+  "eleve": {
+    "modele": "modeles/Qwen3.5-122B-A10B-FP8",
+    "limite_minutes": 165,
+    "limite_chargement_minutes": 30,
+    "env": {
+      "VLLM_FLASHINFER_ALLREDUCE_BACKEND": "trtllm",
+      "VLLM_DEEP_GEMM_WARMUP": "skip",
+      "VLLM_BLOCKSCALE_FP8_GEMM_FLASHINFER": "0",
+      "VLLM_DISABLED_KERNELS": "FlashInferFp8DeepGEMMDynamicBlockScaledKernel,FlashInferFp8BlockScaledMMKernel",
+      "VLLM_USE_DEEP_GEMM_E8M0": "0"
+    },
+    "vllm": {
+      "tensor_parallel_size": 2,
+      "max_model_len": 106496,
+      "max_num_seqs": 256,
+      "gpu_memory_utilization": 0.9,
+      "compilation_config": {
+        "pass_config": {
+          "fuse_allreduce_rms": false
+        }
+      }
+    },
+    "repli": {
+      "enforce_eager": true
+    }
+  },
+  "phases": {
+    "resolution": {
+      "chat_kwargs": {
+        "enable_thinking": true
+      },
+      "n": 1,
+      "temperature": 0.6,
+      "top_p": 0.95,
+      "top_k": 20,
+      "max_tokens": 65536,
+      "lot": 160,
+      "duree_lot_minutes": 15
+    }
+  }
+}

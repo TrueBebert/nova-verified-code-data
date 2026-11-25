@@ -1,0 +1,59 @@
+{
+ "campaign_2": {
+  "examples": 2533,
+  "by_type": {
+   "ecrire": 1286,
+   "reparer_apres_tests": 153,
+   "reparer_bogue_tests": 534,
+   "reparer_bogue_rapport": 560
+  },
+  "by_language": {
+   "cpp": 399,
+   "go": 439,
+   "java": 442,
+   "javascript": 434,
+   "python": 442,
+   "rust": 377
+  },
+  "by_difficulty": {
+   "moyen": 1333,
+   "difficile": 1200
+  },
+  "exercises": 1485
+ },
+ "trial_600": {
+  "examples": 514,
+  "by_type": {
+   "ecrire": 243,
+   "reparer_apres_tests": 34,
+   "reparer_bogue_rapport": 128,
+   "reparer_bogue_tests": 109
+  },
+  "by_language": {
+   "cpp": 85,
+   "go": 86,
+   "java": 83,
+   "javascript": 81,
+   "python": 98,
+   "rust": 81
+  },
+  "exercises": 291
+ },
+ "sample_v2": {
+  "examples": 58,
+  "by_type": {
+   "ecrire": 18,
+   "reparer_apres_tests": 17,
+   "reparer_bogue_rapport": 12,
+   "reparer_bogue_tests": 11
+  },
+  "by_language": {
+   "cpp": 10,
+   "go": 10,
+   "java": 10,
+   "javascript": 9,
+   "python": 10,
+   "rust": 9
+  }
+ }
+}

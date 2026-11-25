@@ -1,0 +1,175 @@
+{
+  "_note": "Travail en agent (agent_code.py, préparé le 01/11/2026, DEC-019 ; heures GPU seulement après l'accord de l'utilisateur). Mesure seulement : SWE-bench n'est jamais une donnée d'entraînement. Une commande par réponse, conteneur sans réseau ni dossier du projet. Mêmes réglages de génération que la mesure du code réel (code_reel_v1.json) : GLM-5.3 en effort high, élève en réflexion. max_tokens : par tour. Le rôle pilote lance l'élève sur 8 bugs, dans une phase à part : ses résultats ne comptent pas dans la mesure. drapeaux_a_essayer : autres façons de lancer le conteneur, seulement sondées par la commande essai. 03/11 : essai du 01/11 réussi (isolation, chaîne, reprise) ; la sauvegarde n'écrit plus rien dans le dépôt (place : 64 Mo d'écriture par conteneur) ; l'essai mesure la place pendant les tests de chaque logiciel et sonde deux façons de mettre le calque ou /tmp sur disque.",
+  "version": 1,
+  "graine": 0,
+  "sous_ensemble": 100,
+  "mode": "simple",
+  "dossier": "resultats/swebench_agent",
+  "tours_max": 60,
+  "delai_commande_s": 300,
+  "sortie_max": 12000,
+  "continu": true,
+  "drapeaux": [
+    "--writable-tmpfs",
+    "--containall",
+    "--no-mount",
+    "bind-paths",
+    "--net",
+    "--network",
+    "none"
+  ],
+  "drapeaux_a_essayer": {
+    "/tmp sur disque": [
+      "--writable-tmpfs",
+      "--containall",
+      "--no-mount",
+      "bind-paths",
+      "--net",
+      "--network",
+      "none",
+      "--bind",
+      "{tmp}:/tmp"
+    ],
+    "calque et /tmp sur disque": [
+      "--overlay",
+      "{haut}",
+      "--containall",
+      "--no-mount",
+      "bind-paths",
+      "--net",
+      "--network",
+      "none",
+      "--bind",
+      "{tmp}:/tmp"
+    ],
+    "sans coupure du réseau (témoin, jamais retenu)": [
+      "--writable-tmpfs",
+      "--containall",
+      "--no-mount",
+      "bind-paths"
+    ]
+  },
+  "roles": {
+    "professeur": {
+      "modele": "modeles/GLM-5.3",
+      "limite_minutes": 215,
+      "limite_chargement_minutes": 70,
+      "agents_simultanes": 48,
+      "env": {
+        "VLLM_FLASHINFER_ALLREDUCE_BACKEND": "trtllm",
+        "VLLM_DEEP_GEMM_WARMUP": "skip",
+        "VLLM_BLOCKSCALE_FP8_GEMM_FLASHINFER": "0",
+        "VLLM_DISABLED_KERNELS": "FlashInferFp8DeepGEMMDynamicBlockScaledKernel,FlashInferFp8BlockScaledMMKernel",
+        "VLLM_USE_DEEP_GEMM_E8M0": "0"
+      },
+      "vllm": {
+        "tensor_parallel_size": 8,
+        "kv_cache_dtype": "fp8",
+        "max_model_len": 106496,
+        "max_num_seqs": 256,
+        "gpu_memory_utilization": 0.88,
+        "compilation_config": {
+          "pass_config": {
+            "fuse_allreduce_rms": false
+          }
+        }
+      },
+      "repli": {
+        "enforce_eager": true
+      },
+      "phases": [
+        {
+          "nom": "agent_professeur_high",
+          "chat_kwargs": {
+            "reasoning_effort": "high"
+          },
+          "n": 1,
+          "temperature": 1.0,
+          "top_p": 0.95,
+          "max_tokens": 32768
+        }
+      ]
+    },
+    "eleve": {
+      "modele": "modeles/Qwen3.5-122B-A10B-FP8",
+      "limite_minutes": 165,
+      "limite_chargement_minutes": 30,
+      "agents_simultanes": 24,
+      "env": {
+        "VLLM_FLASHINFER_ALLREDUCE_BACKEND": "trtllm",
+        "VLLM_DEEP_GEMM_WARMUP": "skip",
+        "VLLM_BLOCKSCALE_FP8_GEMM_FLASHINFER": "0",
+        "VLLM_DISABLED_KERNELS": "FlashInferFp8DeepGEMMDynamicBlockScaledKernel,FlashInferFp8BlockScaledMMKernel",
+        "VLLM_USE_DEEP_GEMM_E8M0": "0"
+      },
+      "vllm": {
+        "tensor_parallel_size": 2,
+        "max_model_len": 106496,
+        "max_num_seqs": 256,
+        "gpu_memory_utilization": 0.9,
+        "compilation_config": {
+          "pass_config": {
+            "fuse_allreduce_rms": false
+          }
+        }
+      },
+      "repli": {
+        "enforce_eager": true
+      },
+      "phases": [
+        {
+          "nom": "agent_eleve",
+          "chat_kwargs": {
+            "enable_thinking": true
+          },
+          "n": 1,
+          "temperature": 0.6,
+          "top_p": 0.95,
+          "top_k": 20,
+          "max_tokens": 32768
+        }
+      ]
+    },
+    "pilote": {
+      "modele": "modeles/Qwen3.5-122B-A10B-FP8",
+      "limite_minutes": 65,
+      "limite_chargement_minutes": 30,
+      "agents_simultanes": 8,
+      "env": {
+        "VLLM_FLASHINFER_ALLREDUCE_BACKEND": "trtllm",
+        "VLLM_DEEP_GEMM_WARMUP": "skip",
+        "VLLM_BLOCKSCALE_FP8_GEMM_FLASHINFER": "0",
+        "VLLM_DISABLED_KERNELS": "FlashInferFp8DeepGEMMDynamicBlockScaledKernel,FlashInferFp8BlockScaledMMKernel",
+        "VLLM_USE_DEEP_GEMM_E8M0": "0"
+      },
+      "vllm": {
+        "tensor_parallel_size": 2,
+        "max_model_len": 106496,
+        "max_num_seqs": 256,
+        "gpu_memory_utilization": 0.9,
+        "compilation_config": {
+          "pass_config": {
+            "fuse_allreduce_rms": false
+          }
+        }
+      },
+      "repli": {
+        "enforce_eager": true
+      },
+      "phases": [
+        {
+          "nom": "agent_pilote",
+          "bugs": 8,
+          "chat_kwargs": {
+            "enable_thinking": true
+          },
+          "n": 1,
+          "temperature": 0.6,
+          "top_p": 0.95,
+          "top_k": 20,
+          "max_tokens": 32768
+        }
+      ]
+    }
+  }
+}
